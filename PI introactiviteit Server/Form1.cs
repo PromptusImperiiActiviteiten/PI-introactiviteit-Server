@@ -6,5 +6,10 @@ namespace PI_introactiviteit_Server
         {
             InitializeComponent();
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

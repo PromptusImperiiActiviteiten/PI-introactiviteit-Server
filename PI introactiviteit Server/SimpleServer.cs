@@ -43,7 +43,7 @@ namespace PI_introactiviteit_Server
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     Console.WriteLine("Received: " + message);
 
-                    SendMessageToAllClients(message);
+                    MessageAll(message);
                 }
             } catch (Exception ex) {
                 Console.WriteLine("Error communicating with client: " + ex.Message);
@@ -55,13 +55,30 @@ namespace PI_introactiviteit_Server
             }
         }
 
-        private void SendMessageToAllClients(string message) {
+        private void MessageAll(string message) {
             byte[] response = Encoding.UTF8.GetBytes(message);
             foreach (var client in clients) {
                 NetworkStream stream = client.GetStream();
                 stream.Write(response, 0, response.Length);
             }
-
         }
+
+        
+        private void MessageAllButOne(string message, TcpClient excludedClient) {
+            byte[] response = Encoding.UTF8.GetBytes(message);
+            foreach (var client in clients) {
+                if (client != excludedClient) {
+                    NetworkStream stream = client.GetStream();
+                    stream.Write(response, 0, response.Length);
+                }
+            }
+        }
+
+        private void MessageOnlyOne(string message, TcpClient client) {
+            byte[] response = Encoding.UTF8.GetBytes(message);
+            NetworkStream stream = client.GetStream();
+            stream.Write(response, 0, response.Length);
+        }
+
     }
 }

@@ -1,12 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace PI_introactiviteit_Server.ServersideClientActions.ClientStates
+namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 {
     abstract class ClientMessageState
     {
         ActiveClient client;
         protected abstract string clientMessageRegexString { get; }
-        Regex regex { get; }
+        protected Regex regex { get; }
 
         public ClientMessageState(ActiveClient client) {
             this.client = client;

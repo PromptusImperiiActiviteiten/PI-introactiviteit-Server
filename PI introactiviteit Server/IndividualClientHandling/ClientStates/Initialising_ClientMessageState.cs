@@ -1,4 +1,4 @@
-﻿namespace PI_introactiviteit_Server.ServersideClientActions.ClientStates
+﻿namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 {
     internal class Initialising_ClientMessageState(ActiveClient client) : ClientMessageState(client)
     {
@@ -6,7 +6,6 @@
 
         public override void CheckMessage(string message) {
             throw new NotImplementedException();
-
         }
     }
 }

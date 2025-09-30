@@ -1,3 +1,5 @@
+using PI_introactiviteit_Server.Services;
+
 namespace PI_introactiviteit_Server
 {
     internal static class Program
@@ -5,7 +7,7 @@ namespace PI_introactiviteit_Server
         [STAThread]
         static void Main()
         {
-            SimpleServer server = new SimpleServer();
+            ServerInitialisations server = new ServerInitialisations();
             server.Start(5000);
             //ApplicationConfiguration.Initialize();
             //Application.Run(new Form1());

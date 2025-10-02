@@ -36,7 +36,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling
                 {
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     Console.WriteLine("Received: " + message);
-                    currentState.CheckMessage(message);
+                    currentState.HandleClientMessage(message);
                 }
             }
             catch (Exception ex)

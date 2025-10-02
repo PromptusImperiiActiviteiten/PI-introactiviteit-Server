@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using PI_introactiviteit_Server.Services;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 {
@@ -13,6 +15,18 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
             clientMessageRegex = new Regex(clientMessageRegexString);
         }
 
-        public abstract void CheckMessage(string message);
+        public abstract void HandleClientMessage(string message);
+
+        protected Boolean HandleMessageFormatCheck(string message) {
+            if (!clientMessageRegex.IsMatch(message))
+            {
+                string errorResponseMessage = "This message isn't correctly formatted";
+                Messenger.DelegateMessage(MessageType.SERVER_ERROR_ONE, client.activeClient, errorResponseMessage);
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

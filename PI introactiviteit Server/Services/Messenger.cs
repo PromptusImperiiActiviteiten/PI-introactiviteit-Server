@@ -1,4 +1,5 @@
 ﻿using PI_introactiviteit_Server.Models;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace PI_introactiviteit_Server.Services
@@ -37,7 +38,7 @@ namespace PI_introactiviteit_Server.Services
 
             prefix = messageType.ToString();
             encodedMessage = string.Concat(prefix, message);
-            MessageAll(clients, message);
+            MessageAll(clients, encodedMessage);
         }
 
         public static void DelegateMessage(MessageType messageType, ClientModel seperatedClient, string message)
@@ -53,9 +54,9 @@ namespace PI_introactiviteit_Server.Services
                 throw new IndexOutOfRangeException("This message type requires different parameters than provided.");
             }
 
-            prefix = messageType.ToString();
+            prefix = Enum.Format(typeof(MessageType), messageType, "d") + ":";
             encodedMessage = string.Concat(prefix, message);
-            MessageOnlyOne(message, seperatedClient);
+            MessageOnlyOne(encodedMessage, seperatedClient);
         }
 
         public static void DelegateMessage(MessageType messageType, List<ClientModel> clients, string message, ClientModel seperatedClient)
@@ -70,9 +71,9 @@ namespace PI_introactiviteit_Server.Services
                 throw new IndexOutOfRangeException("This message type requires different parameters than provided.");
             }
 
-            prefix = messageType.ToString();
+            prefix = Enum.Format(typeof(MessageType), messageType, "d");
             encodedMessage = string.Concat(prefix, message);
-            MessageAllButOne(clients, message, seperatedClient);
+            MessageAllButOne(clients, encodedMessage, seperatedClient);
         }
 
         private static void MessageAll(List<ClientModel> clients, string message)
@@ -81,7 +82,9 @@ namespace PI_introactiviteit_Server.Services
             foreach (var client in clients)
             {
                 client.clientStream.Write(response, 0, response.Length);
+                
             }
+            Console.WriteLine(message);
         }
 
         private static void MessageAllButOne(List<ClientModel> clients, string message, ClientModel excludedClient)
@@ -92,14 +95,16 @@ namespace PI_introactiviteit_Server.Services
             {
                 if (client == excludedClient) continue;
                 client.clientStream.Write(response, 0, response.Length);
-
+                
             }
+            Console.WriteLine(message);
         }
 
         private static void MessageOnlyOne(string message, ClientModel client)
         {
             byte[] response = Encoding.UTF8.GetBytes(message);
             client.clientStream.Write(response, 0, response.Length);
+            Console.WriteLine(message);
         }
     }
 }

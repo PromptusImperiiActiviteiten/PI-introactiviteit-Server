@@ -9,24 +9,27 @@ namespace PI_introactiviteit_Server.IndividualClientHandling
 {
     internal class ActiveClient
     {
+
+        public ServerInitialisations server {get;}
         ClientMessageState currentState;
         public ClientModel activeClient { get; private set; }
 
-        public ActiveClient()
+
+        public ActiveClient(ServerInitialisations server)
         {
             currentState = new Initialising_ClientMessageState(this);
+            this.server = server;
         }
 
-        public void HandleClient(TcpClient client, ServerInitialisations server)
+        public void HandleClient(TcpClient client)
         {
             NetworkStream stream = client.GetStream();
             byte[] buffer = new byte[1024];
             int bytesRead;
             
-            activeClient = new ClientModel(null, client, stream);
+            activeClient = new ClientModel(client, stream);
 
             server.clients.Add(activeClient);
-
             try
             {
                 while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)

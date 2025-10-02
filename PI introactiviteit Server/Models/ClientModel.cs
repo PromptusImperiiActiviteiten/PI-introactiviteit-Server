@@ -15,6 +15,12 @@ namespace PI_introactiviteit_Server.Models
             this.clientStream = clientStream;
         }
 
+        public ClientModel(TcpClient tcpClient, NetworkStream clientStream)
+        {
+            this.tcpClient = tcpClient;
+            this.clientStream = clientStream;
+        }
+
         public void setName(string newName)
         {
             if (clientName != null) return;

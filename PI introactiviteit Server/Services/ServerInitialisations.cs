@@ -24,9 +24,9 @@ namespace PI_introactiviteit_Server.Services
                 try {
                     TcpClient client = listener.AcceptTcpClient();
                     Console.WriteLine("Client connected.");
-                    ActiveClient newClient = new ActiveClient();
+                    ActiveClient newClient = new ActiveClient(this);
 
-                    Thread clientThread = new Thread(() => newClient.HandleClient(client,this));
+                    Thread clientThread = new Thread(() => newClient.HandleClient(client));
                     clientThread.Start();
                 } catch (Exception ex) {
                     Console.WriteLine("Error accepting client: " + ex.Message);

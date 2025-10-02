@@ -82,7 +82,6 @@ namespace PI_introactiviteit_Server.Services
             foreach (var client in clients)
             {
                 client.clientStream.Write(response, 0, response.Length);
-                
             }
             Console.WriteLine(message);
         }
@@ -94,8 +93,7 @@ namespace PI_introactiviteit_Server.Services
             foreach (var client in clients)
             {
                 if (client == excludedClient) continue;
-                client.clientStream.Write(response, 0, response.Length);
-                
+                client.clientStream.Write(response, 0, response.Length);  
             }
             Console.WriteLine(message);
         }

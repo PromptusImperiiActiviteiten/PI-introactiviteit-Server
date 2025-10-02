@@ -71,7 +71,7 @@ namespace PI_introactiviteit_Server.Services
                 throw new IndexOutOfRangeException("This message type requires different parameters than provided.");
             }
 
-            prefix = Enum.Format(typeof(MessageType), messageType, "d");
+            prefix = Enum.Format(typeof(MessageType), messageType, "d") + ":";
             encodedMessage = string.Concat(prefix, message);
             MessageAllButOne(clients, encodedMessage, seperatedClient);
         }

@@ -9,9 +9,6 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 
         public override void HandleClientMessage(string message) {
             if (HandleMessageFormatCheck(message)) return;
-
-
-
             FormatAndSendResponse(message);
         }
 

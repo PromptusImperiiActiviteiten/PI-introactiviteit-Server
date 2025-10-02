@@ -20,7 +20,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
             string messageWithoutProtocol = Regex.Replace(message, clientMessageRegexString, "");
             string responseMessage = string.Format("{0}: {1}", client.activeClient.clientName, messageWithoutProtocol);
             
-            Messenger.DelegateMessage(MessageType.SERVER_CHAT_ALL, client.server.clients, responseMessage);
+            Messenger.DelegateMessage(MessageType.SERVER_CHAT_ALL_BUT_ONE, client.server.clients, responseMessage,client.activeClient);
         }
     }
 }

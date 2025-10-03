@@ -9,8 +9,6 @@ namespace PI_introactiviteit_Server
         {
             ServerInitialisations server = new ServerInitialisations();
             server.Start(5000);
-            //ApplicationConfiguration.Initialize();
-            //Application.Run(new Form1());
         }
     }
 }

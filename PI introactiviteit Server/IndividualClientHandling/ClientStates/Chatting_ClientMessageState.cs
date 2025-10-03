@@ -41,7 +41,6 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
                     }
 
                     FormatAndSendResponse(MessageType.SERVER_CHAT_ONE, isolatedClient, message);
-
                     break;
                 default:
                     errorMessage = "this message is not a recognised command";

@@ -23,7 +23,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
             string clientName;
 
             if ((clientName = MessageAlterations.IsolateMessageFromProtocol(message)) == null) {
-                string errorResponseMessage = "There was an error trying to format the name";
+                string errorResponseMessage = "There was an error trying to format the name, try again";
                 Messenger.DelegateMessage(MessageType.SERVER_ERROR_ONE, client.activeClient, errorResponseMessage);
                 return;
             }

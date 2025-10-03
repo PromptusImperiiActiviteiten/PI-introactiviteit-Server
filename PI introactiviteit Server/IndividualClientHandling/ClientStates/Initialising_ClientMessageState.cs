@@ -12,17 +12,26 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 
         public override void HandleClientMessage(string message)
         {
-            if (HandleRegexCheck(message)) return;
+            if (!MessageAlterations.HandleRegexCheck(message, clientMessageRegex))
+            {
+                string errorResponseMessage = "This message isn't correctly formatted";
+                Messenger.DelegateMessage(MessageType.SERVER_ERROR_ONE, client.activeClient, errorResponseMessage);
+                return;
+            }
 
-            IsolateAndSetClientName(message);
+
+            string clientName;
+
+            if ((clientName = MessageAlterations.IsolateMessageFromProtocol(message)) == null) {
+                string errorResponseMessage = "There was an error trying to format the name";
+                Messenger.DelegateMessage(MessageType.SERVER_ERROR_ONE, client.activeClient, errorResponseMessage);
+                return;
+            }
+
+            client.activeClient.setName(clientName);
             FormatAndSendResponse();
 
             client.SetState(new Chatting_ClientMessageState(client));
-        }
-
-        private void IsolateAndSetClientName(string message) {
-            string clientName = Regex.Replace(message, clientMessageRegexString, "");
-            client.activeClient.setName(clientName);
         }
 
         private void FormatAndSendResponse()

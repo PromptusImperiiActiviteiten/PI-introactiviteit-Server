@@ -2,6 +2,7 @@
 using PI_introactiviteit_Server.Models;
 using System.Net;
 using System.Net.Sockets;
+using System.Windows.Forms;
 
 namespace PI_introactiviteit_Server.Services
 {
@@ -33,5 +34,17 @@ namespace PI_introactiviteit_Server.Services
                 }
             }
         }
+
+
+        public static ClientModel IsolateClientModelByName(List<ClientModel> allClients,string clientName) {
+            foreach (ClientModel client in allClients)
+            {
+                if (!client.clientName.Equals(clientName)) continue;
+                return client;
+            }
+
+            return null;
+        }
+
     }
 }

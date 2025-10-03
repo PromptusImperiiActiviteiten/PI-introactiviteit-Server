@@ -10,9 +10,13 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 
         public override void HandleClientMessage(string message)
         {
-            if (!HandleRegexCheck(message)) return;
+            if (!MessageAlterations.HandleRegexCheck(message,clientMessageRegex)) {
+                string errorResponseMessage = "This message isn't correctly formatted";
+                Messenger.DelegateMessage(MessageType.SERVER_ERROR_ONE, client.activeClient, errorResponseMessage);
+                return;
+            } 
 
-            string messageCode = Regex.Replace(message,@":.*","");
+            string messageCode = MessageAlterations.IsolateProtocolFromMessage(message);
             string errorMessage;
             switch (messageCode)
             {
@@ -20,22 +24,24 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
                     FormatAndSendResponse(message);
                     break;
                 case "103":
-                    string messageEndRegexString = @";.*$";
-                    ChangeRegex(messageEndRegexString);
-                    if (!HandleRegexCheck(message)) return;
+                    ClientModel isolatedClient;
+                    string isolatedClientName;
 
-                    string whisperClientName = Regex.Replace(message,clientMessageRegexString,"");
-                    whisperClientName = Regex.Replace(whisperClientName,messageEndRegexString,"");
-
-                    foreach (ClientModel client in client.server.clients)
-                    {
-                        if (!client.clientName.Equals(whisperClientName)) continue;
-                        FormatAndSendResponse(MessageType.SERVER_CHAT_ONE,client,message);
-                        ChangeRegex(clientMessageRegexString);
-                        return;
+                    if ((isolatedClientName = MessageAlterations.IsolateClientNameFrom103Message(message)) == null) {
+                        errorMessage = "this message does not conform to the whisper command";
+                        FormatAndSendResponse(MessageType.SERVER_ERROR_ONE, client.activeClient, errorMessage);
+                        break;
                     }
-                    errorMessage = "this person does not exist";
-                    FormatAndSendResponse(MessageType.SERVER_ERROR_ONE, client.activeClient, errorMessage);
+
+                    if ((isolatedClient = ServerInitialisations.IsolateClientModelByName(client.server.clients, isolatedClientName)) == null)
+                    {
+                        errorMessage = "this person does not exist";
+                        FormatAndSendResponse(MessageType.SERVER_ERROR_ONE, client.activeClient, errorMessage);
+                        break;
+                    }
+
+                    FormatAndSendResponse(MessageType.SERVER_CHAT_ONE, isolatedClient, message);
+
                     break;
                 default:
                     errorMessage = "this message is not a recognised command";
@@ -52,9 +58,11 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
             Messenger.DelegateMessage(MessageType.SERVER_CHAT_ALL_BUT_ONE, client.server.clients, responseMessage, client.activeClient);
         }
 
-        private void FormatAndSendResponse(MessageType messageType,ClientModel client, string message)
+        private void FormatAndSendResponse(MessageType messageType,ClientModel isolatedClient, string message)
         {
-            Messenger.DelegateMessage(messageType, client, message);
+            string messageWithoutProtocol = Regex.Replace(message, @".*;", "");
+            string responseMessage = string.Format("{0}: {1}", client.activeClient.clientName, messageWithoutProtocol);
+            Messenger.DelegateMessage(messageType, isolatedClient, responseMessage);
         }
     }
 }

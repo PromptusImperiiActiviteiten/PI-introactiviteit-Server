@@ -4,7 +4,15 @@ using System.Text;
 
 namespace PI_introactiviteit_Server.Services
 {
-    enum MessageType {
+    public enum MessageProtocol {
+        //incomming client messages
+        CLIENT_CHAT_ALL             = 101,
+        CLIENT_CHAT_WHISPER         = 102,
+
+        //special incomming client messages
+        CLIENT_LOGIN_MESSAGE        = 111,
+        CLIENT_COMMAND_NOT_FOUND    = 121,
+
         //client messages from server
         SERVER_CHAT_ALL             = 201,
         SERVER_CHAT_ONE             = 202,
@@ -18,60 +26,59 @@ namespace PI_introactiviteit_Server.Services
         //server error messages
         SERVER_ERROR_ALL            = 221,
         SERVER_ERROR_ONE            = 222
-        
     }
 
     class Messenger
     {
-        public static void DelegateMessage(MessageType messageType, List<ClientModel> clients, string message)
+        public static void DelegateMessage(MessageProtocol messageType, List<ClientModel> clients, string message)
         {
             string prefix;
             string encodedMessage;
 
             if (!(
-                messageType == MessageType.SERVER_CHAT_ALL      ||
-                messageType == MessageType.SERVER_ALL           ||
-                messageType == MessageType.SERVER_ERROR_ALL     ))
+                messageType == MessageProtocol.SERVER_CHAT_ALL      ||
+                messageType == MessageProtocol.SERVER_ALL           ||
+                messageType == MessageProtocol.SERVER_ERROR_ALL     ))
             {
                 throw new IndexOutOfRangeException("This message type requires different parameters than provided.");
             }
 
-            prefix = Enum.Format(typeof(MessageType), messageType, "d") + ":";
+            prefix = string.Format(":{0}", Enum.Format(typeof(MessageProtocol), messageType, "d"));
             encodedMessage = string.Concat(prefix, message);
             MessageAll(clients, encodedMessage);
         }
 
-        public static void DelegateMessage(MessageType messageType, ClientModel seperatedClient, string message)
+        public static void DelegateMessage(MessageProtocol messageType, ClientModel seperatedClient, string message)
         {
             string prefix;
             string encodedMessage;
 
             if (!(
-                messageType == MessageType.SERVER_CHAT_ONE  ||
-                messageType == MessageType.SERVER_ONE       ||
-                messageType == MessageType.SERVER_ERROR_ONE ))
+                messageType == MessageProtocol.SERVER_CHAT_ONE  ||
+                messageType == MessageProtocol.SERVER_ONE       ||
+                messageType == MessageProtocol.SERVER_ERROR_ONE ))
             {
                 throw new IndexOutOfRangeException("This message type requires different parameters than provided.");
             }
 
-            prefix = Enum.Format(typeof(MessageType), messageType, "d") + ":";
+            prefix = string.Format(":{0}", Enum.Format(typeof(MessageProtocol), messageType, "d"));
             encodedMessage = string.Concat(prefix, message);
             MessageOnlyOne(encodedMessage, seperatedClient);
         }
 
-        public static void DelegateMessage(MessageType messageType, List<ClientModel> clients, string message, ClientModel seperatedClient)
+        public static void DelegateMessage(MessageProtocol messageType, List<ClientModel> clients, string message, ClientModel seperatedClient)
         {
             string prefix;
             string encodedMessage;
 
             if (!(
-                messageType == MessageType.SERVER_CHAT_ALL_BUT_ONE  ||
-                messageType == MessageType.SERVER_ALL_BUT_ONE       ))
+                messageType == MessageProtocol.SERVER_CHAT_ALL_BUT_ONE  ||
+                messageType == MessageProtocol.SERVER_ALL_BUT_ONE       ))
             {
                 throw new IndexOutOfRangeException("This message type requires different parameters than provided.");
             }
 
-            prefix = Enum.Format(typeof(MessageType), messageType, "d") + ":";
+            prefix = string.Format(":{0}", Enum.Format(typeof(MessageProtocol), messageType, "d"));
             encodedMessage = string.Concat(prefix, message);
             MessageAllButOne(clients, encodedMessage, seperatedClient);
         }

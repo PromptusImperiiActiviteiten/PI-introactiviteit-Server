@@ -7,7 +7,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
     abstract class ClientMessageState
     {
         ActiveClient client;
-        protected abstract string clientMessageRegexString { get; }
+        protected string clientMessageRegexString { get; } = @"^1\d{2}:";
         protected Regex clientMessageRegex { get; private set; }
 
         public ClientMessageState(ActiveClient client) {
@@ -17,16 +17,8 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 
         public abstract void HandleClientMessage(string message);
 
-        protected Boolean HandleMessageFormatCheck(string message) {
-            if (!clientMessageRegex.IsMatch(message))
-            {
-                string errorResponseMessage = "This message isn't correctly formatted";
-                Messenger.DelegateMessage(MessageType.SERVER_ERROR_ONE, client.activeClient, errorResponseMessage);
-                return true;
-            }
-
-            return false;
+        protected void ChangeRegex(string newRegexString) {
+            clientMessageRegex = new Regex(newRegexString);
         }
-
     }
 }

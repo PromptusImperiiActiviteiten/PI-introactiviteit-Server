@@ -33,5 +33,17 @@ namespace PI_introactiviteit_Server.Services
                 }
             }
         }
+
+
+        public static ClientModel IsolateClientModelByName(List<ClientModel> allClients,string clientName) {
+            foreach (ClientModel client in allClients)
+            {
+                if (!client.clientName.Equals(clientName)) continue;
+                return client;
+            }
+
+            return null;
+        }
+
     }
 }

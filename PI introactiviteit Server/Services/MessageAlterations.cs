@@ -1,44 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using System.Windows.Forms;
+﻿using System.Text.RegularExpressions;
 
 namespace PI_introactiviteit_Server.Services
 {
     public class MessageAlterations
     {
-        public static string IsolateMessageFromProtocol(string message)
+        public static string RemoveProtocolFromMessage(string message)
         {
             string messageRegexString = @"^1\d{2}:";
 
-            string clientName = IsolateByRegexString(message,messageRegexString);
+            string clientName = RemoveByRegexString(message,messageRegexString);
 
             return clientName;
         }
 
-        public static string IsolateClientNameFrom103Message(string message) {
+        public static string GetTargetedClientNameFrom102Message(string message) {
             string messageEndRegexString = @";.*$";
             string protocolRegexString = @"^102:";
 
-            string messageWithoutProtocol = IsolateByRegexString(message, protocolRegexString);
-            string whisperClientName = IsolateByRegexString(messageWithoutProtocol, messageEndRegexString);
+            string messageWithoutProtocol = RemoveByRegexString(message, protocolRegexString);
+            string whisperClientName = RemoveByRegexString(messageWithoutProtocol, messageEndRegexString);
 
             return whisperClientName;
         }
 
-        public static string IsolateProtocolFromMessage(string message) {
+        public static string RemoveClientNameAndProtocolFrom102Message(string message)
+        {
+            string messageEndRegexString = @"^.*;";
+
+            string whisperClientName = RemoveByRegexString(message, messageEndRegexString);
+
+            return whisperClientName;
+        }
+
+
+        public static string RemoveMessageFromProtocol(string message) {
             string protocolRegexString = @":.*$";
 
-            string messageProtocol = IsolateByRegexString(message, protocolRegexString);
+            string messageProtocol = RemoveByRegexString(message, protocolRegexString);
             
             return messageProtocol;
         }
 
-        private static string IsolateByRegexString(string message, string regexString) {
+        private static string RemoveByRegexString(string message, string regexString) {
             Regex regex = new Regex(regexString);
 
             if (!HandleRegexCheck(message, regex)) return null;
@@ -61,7 +64,7 @@ namespace PI_introactiviteit_Server.Services
             int intMessageProtocolCode;
             string stringMessageProtocolCode;
 
-            stringMessageProtocolCode = MessageAlterations.IsolateProtocolFromMessage(incommingClientMessage);
+            stringMessageProtocolCode = MessageAlterations.RemoveMessageFromProtocol(incommingClientMessage);
             int.TryParse(stringMessageProtocolCode, out intMessageProtocolCode);
             MessageProtocol incommingMessageProtocol = (MessageProtocol)intMessageProtocolCode;
 

@@ -48,12 +48,10 @@ namespace PI_introactiviteit_Server.IndividualClientHandling
             catch (Exception ex)
             {
                 string disconnectMessage = string.Format("{0} Has disconnected from the server", activeClient.clientName);
+                string connectionErrorMessage = "Het spijt ons, er gaat iets fout bij de server. Dit komt niet door jou, wij hebben iets over het hoofd gezien. Maar, je moet wel het programma even opnieuw opstarten.";
 
-                Console.WriteLine("an unknown error has occured causing the client: {0} to disconnect", activeClient.clientName);
-                Messenger.DelegateMessage(MessageProtocol.SERVER_ERROR_ONE, activeClient, 
-                    "Het spijt ons, er gaat iets fout bij de server." +
-                    "Dit komt niet door jou, wij hebben iets over het hoofd gezien." +
-                    "Maar, je moet wel het programma even opnieuw opstarten.");
+                Console.WriteLine("an unknown error has occured causing the client: {0} to disconnect: {1}", activeClient.clientName, ex.Message);
+                Messenger.DelegateMessage(MessageProtocol.SERVER_ERROR_ONE, activeClient, connectionErrorMessage);
                 Messenger.DelegateMessage(MessageProtocol.SERVER_ALL, server.clients, disconnectMessage);
             }
             finally
@@ -61,7 +59,6 @@ namespace PI_introactiviteit_Server.IndividualClientHandling
                 activeClient.clientStream.Close();
                 activeClient.tcpClient.Close();
                 server.clients.Remove(activeClient);
-                Console.WriteLine("Client disconnected.");
             }
         }
 

@@ -7,8 +7,10 @@ namespace PI_introactiviteit_Server
         [STAThread]
         static void Main()
         {
+            int CommincaitonsPort = 5000;
+
             ServerInitialisations server = new ServerInitialisations();
-            server.Start(5000);
+            server.Start(CommincaitonsPort);
         }
     }
 }

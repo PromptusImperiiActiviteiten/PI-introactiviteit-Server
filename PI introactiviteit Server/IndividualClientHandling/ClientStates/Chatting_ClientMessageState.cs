@@ -29,7 +29,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
                     ClientModel isolatedClient;
                     string isolatedClientName;
 
-                    if ((isolatedClientName = MessageAlterations.IsolateClientNameFrom103Message(incommingClientMessage)) == null) {
+                    if ((isolatedClientName = MessageAlterations.GetTargetedClientNameFrom102Message(incommingClientMessage)) == null) {
                         errorMessage = "this message does not conform to the whisper command.";
                         FormatAndSendResponse(MessageProtocol.SERVER_ERROR_ONE, client.activeClient, errorMessage);
                         break;
@@ -57,7 +57,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 
         private void FormatAndSendResponse(string unformattedOutgoingMessage)
         {
-            string messageWithoutProtocol = MessageAlterations.IsolateMessageFromProtocol(unformattedOutgoingMessage);
+            string messageWithoutProtocol = MessageAlterations.RemoveProtocolFromMessage(unformattedOutgoingMessage);
             string responseMessage = string.Format("{0}: {1}", client.activeClient.clientName, messageWithoutProtocol);
 
             Messenger.DelegateMessage(MessageProtocol.SERVER_CHAT_ALL_BUT_ONE, client.server.clients, responseMessage, client.activeClient);
@@ -65,7 +65,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 
         private void FormatAndSendResponse(MessageProtocol messageType,ClientModel isolatedClient, string unformattedOutgoingMessage)
         {
-            string messageWithoutProtocol = Regex.Replace(unformattedOutgoingMessage, @".*;", "");
+            string messageWithoutProtocol = MessageAlterations.RemoveClientNameAndProtocolFrom102Message(unformattedOutgoingMessage);
             string responseMessage = string.Format("{0}: {1}", client.activeClient.clientName, messageWithoutProtocol);
             Messenger.DelegateMessage(messageType, isolatedClient, responseMessage);
         }

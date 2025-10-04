@@ -26,7 +26,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 
             switch (incommingMessageProtocol) {
                 case MessageProtocol.CLIENT_LOGIN_MESSAGE:
-                    if ((clientName = MessageAlterations.IsolateMessageFromProtocol(incommingClientMessage)) == null)
+                    if ((clientName = MessageAlterations.RemoveProtocolFromMessage(incommingClientMessage)) == null)
                     {
                         errorResponseMessage = "There was an error trying to format the name, try again";
                         Messenger.DelegateMessage(MessageProtocol.SERVER_ERROR_ONE, client.activeClient, errorResponseMessage);

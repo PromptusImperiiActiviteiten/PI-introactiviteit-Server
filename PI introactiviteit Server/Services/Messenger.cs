@@ -43,7 +43,7 @@ namespace PI_introactiviteit_Server.Services
                 throw new IndexOutOfRangeException("This message type requires different parameters than provided.");
             }
 
-            prefix = string.Format(":{0}", Enum.Format(typeof(MessageProtocol), messageType, "d"));
+            prefix = string.Format("{0}:", Enum.Format(typeof(MessageProtocol), messageType, "d"));
             encodedMessage = string.Concat(prefix, message);
             MessageAll(clients, encodedMessage);
         }
@@ -61,7 +61,7 @@ namespace PI_introactiviteit_Server.Services
                 throw new IndexOutOfRangeException("This message type requires different parameters than provided.");
             }
 
-            prefix = string.Format(":{0}", Enum.Format(typeof(MessageProtocol), messageType, "d"));
+            prefix = string.Format("{0}:", Enum.Format(typeof(MessageProtocol), messageType, "d"));
             encodedMessage = string.Concat(prefix, message);
             MessageOnlyOne(encodedMessage, seperatedClient);
         }
@@ -78,7 +78,7 @@ namespace PI_introactiviteit_Server.Services
                 throw new IndexOutOfRangeException("This message type requires different parameters than provided.");
             }
 
-            prefix = string.Format(":{0}", Enum.Format(typeof(MessageProtocol), messageType, "d"));
+            prefix = string.Format("{0}:", Enum.Format(typeof(MessageProtocol), messageType, "d"));
             encodedMessage = string.Concat(prefix, message);
             MessageAllButOne(clients, encodedMessage, seperatedClient);
         }

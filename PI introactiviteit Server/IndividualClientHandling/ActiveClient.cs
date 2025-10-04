@@ -32,7 +32,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling
             server.clients.Add(activeClient);
             try
             {
-                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                while ((bytesRead = activeClient.clientStream.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     Console.WriteLine(message);
@@ -42,19 +42,24 @@ namespace PI_introactiviteit_Server.IndividualClientHandling
             catch (IOException ex)
             {
                 Console.WriteLine("Error communicating with client: " + ex.Message);
+                string disconnectMessage = string.Format("{0} Has disconnected from the server", activeClient.clientName);
+                Messenger.DelegateMessage(MessageProtocol.SERVER_ALL_BUT_ONE, server.clients, disconnectMessage,activeClient);
             }
             catch (Exception ex)
             {
+                string disconnectMessage = string.Format("{0} Has disconnected from the server", activeClient.clientName);
+
                 Console.WriteLine("an unknown error has occured causing the client: {0} to disconnect", activeClient.clientName);
-                Messenger.DelegateMessage(MessageType.SERVER_ERROR_ONE, activeClient, 
+                Messenger.DelegateMessage(MessageProtocol.SERVER_ERROR_ONE, activeClient, 
                     "Het spijt ons, er gaat iets fout bij de server." +
                     "Dit komt niet door jou, wij hebben iets over het hoofd gezien." +
                     "Maar, je moet wel het programma even opnieuw opstarten.");
+                Messenger.DelegateMessage(MessageProtocol.SERVER_ALL, server.clients, disconnectMessage);
             }
             finally
-            {
-                stream.Close();
-                client.Close();
+            {   
+                activeClient.clientStream.Close();
+                activeClient.tcpClient.Close();
                 server.clients.Remove(activeClient);
                 Console.WriteLine("Client disconnected.");
             }

@@ -7,7 +7,7 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
     abstract class ClientMessageState
     {
         ActiveClient client;
-        protected abstract string clientMessageRegexString { get; }
+        protected string clientMessageRegexString { get; } = @"^1\d{2}:";
         protected Regex clientMessageRegex { get; private set; }
 
         public ClientMessageState(ActiveClient client) {

@@ -6,60 +6,66 @@ namespace PI_introactiviteit_Server.IndividualClientHandling.ClientStates
 {
     class Chatting_ClientMessageState(ActiveClient client) : ClientMessageState(client)
     {
-        protected override string clientMessageRegexString => @"^1(?!01)\d{2}:";
-
-        public override void HandleClientMessage(string message)
+        public override void HandleClientMessage(string incommingClientMessage)
         {
-            if (!MessageAlterations.HandleRegexCheck(message,clientMessageRegex)) {
-                string errorResponseMessage = "This message isn't correctly formatted";
-                Messenger.DelegateMessage(MessageType.SERVER_ERROR_ONE, client.activeClient, errorResponseMessage);
-                return;
-            } 
-
-            string messageCode = MessageAlterations.IsolateProtocolFromMessage(message);
             string errorMessage;
-            switch (messageCode)
+            MessageProtocol incommingMessageProtocol;
+            
+
+            if (!MessageAlterations.HandleRegexCheck(incommingClientMessage,clientMessageRegex)) {
+                string errorResponseMessage = "This message isn't correctly formatted";
+                Messenger.DelegateMessage(MessageProtocol.SERVER_ERROR_ONE, client.activeClient, errorResponseMessage);
+                return;
+            }
+
+            incommingMessageProtocol = MessageAlterations.GetProtocolFromMessage(incommingClientMessage);
+
+            switch (incommingMessageProtocol)
             {
-                case "102":
-                    FormatAndSendResponse(message);
+                case MessageProtocol.CLIENT_CHAT_ALL:
+                    FormatAndSendResponse(incommingClientMessage);
                     break;
-                case "103":
+                case MessageProtocol.CLIENT_CHAT_WHISPER:
                     ClientModel isolatedClient;
                     string isolatedClientName;
 
-                    if ((isolatedClientName = MessageAlterations.IsolateClientNameFrom103Message(message)) == null) {
-                        errorMessage = "this message does not conform to the whisper command";
-                        FormatAndSendResponse(MessageType.SERVER_ERROR_ONE, client.activeClient, errorMessage);
+                    if ((isolatedClientName = MessageAlterations.IsolateClientNameFrom103Message(incommingClientMessage)) == null) {
+                        errorMessage = "this message does not conform to the whisper command.";
+                        FormatAndSendResponse(MessageProtocol.SERVER_ERROR_ONE, client.activeClient, errorMessage);
                         break;
                     }
 
                     if ((isolatedClient = ServerInitialisations.IsolateClientModelByName(client.server.clients, isolatedClientName)) == null)
                     {
                         errorMessage = "this person does not exist";
-                        FormatAndSendResponse(MessageType.SERVER_ERROR_ONE, client.activeClient, errorMessage);
+                        FormatAndSendResponse(MessageProtocol.SERVER_ERROR_ONE, client.activeClient, errorMessage);
                         break;
                     }
 
-                    FormatAndSendResponse(MessageType.SERVER_CHAT_ONE, isolatedClient, message);
+                    FormatAndSendResponse(MessageProtocol.SERVER_CHAT_ONE, isolatedClient, incommingClientMessage);
+                    break;
+                case MessageProtocol.CLIENT_LOGIN_MESSAGE:
+                    errorMessage = "This message uses the login protocol and is not meant for chat usage.";
+                    FormatAndSendResponse(MessageProtocol.SERVER_ERROR_ONE, client.activeClient, errorMessage);
                     break;
                 default:
-                    errorMessage = "this message is not a recognised command";
-                    FormatAndSendResponse(MessageType.SERVER_ERROR_ONE,client.activeClient, errorMessage);
+                    errorMessage = "this message is not a recognised command.";
+                    FormatAndSendResponse(MessageProtocol.SERVER_ERROR_ONE,client.activeClient, errorMessage);
                     break;
             }
         }
 
-        private void FormatAndSendResponse(string message)
+        private void FormatAndSendResponse(string unformattedOutgoingMessage)
         {
-            string messageWithoutProtocol = Regex.Replace(message, clientMessageRegexString, "");
+            string messageWithoutProtocol = MessageAlterations.IsolateMessageFromProtocol(unformattedOutgoingMessage);
             string responseMessage = string.Format("{0}: {1}", client.activeClient.clientName, messageWithoutProtocol);
 
-            Messenger.DelegateMessage(MessageType.SERVER_CHAT_ALL_BUT_ONE, client.server.clients, responseMessage, client.activeClient);
+            Messenger.DelegateMessage(MessageProtocol.SERVER_CHAT_ALL_BUT_ONE, client.server.clients, responseMessage, client.activeClient);
         }
 
-        private void FormatAndSendResponse(MessageType messageType,ClientModel isolatedClient, string message)
+        private void FormatAndSendResponse(MessageProtocol messageType,ClientModel isolatedClient, string unformattedOutgoingMessage)
         {
-            string messageWithoutProtocol = Regex.Replace(message, @".*;", "");
+            string messageWithoutProtocol = Regex.Replace(unformattedOutgoingMessage, @".*;", "");
             string responseMessage = string.Format("{0}: {1}", client.activeClient.clientName, messageWithoutProtocol);
             Messenger.DelegateMessage(messageType, isolatedClient, responseMessage);
         }

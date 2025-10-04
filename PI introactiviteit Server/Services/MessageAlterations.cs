@@ -22,7 +22,7 @@ namespace PI_introactiviteit_Server.Services
 
         public static string IsolateClientNameFrom103Message(string message) {
             string messageEndRegexString = @";.*$";
-            string protocolRegexString = @"^103:";
+            string protocolRegexString = @"^102:";
 
             string messageWithoutProtocol = IsolateByRegexString(message, protocolRegexString);
             string whisperClientName = IsolateByRegexString(messageWithoutProtocol, messageEndRegexString);
@@ -55,5 +55,18 @@ namespace PI_introactiviteit_Server.Services
             }
             return false;
         }
+
+        public static MessageProtocol GetProtocolFromMessage(string incommingClientMessage)
+        {
+            int intMessageProtocolCode;
+            string stringMessageProtocolCode;
+
+            stringMessageProtocolCode = MessageAlterations.IsolateProtocolFromMessage(incommingClientMessage);
+            int.TryParse(stringMessageProtocolCode, out intMessageProtocolCode);
+            MessageProtocol incommingMessageProtocol = (MessageProtocol)intMessageProtocolCode;
+
+            return incommingMessageProtocol;
+        }
+
     }
 }
